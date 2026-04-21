@@ -8,7 +8,7 @@ vi.mock('../db/config.js', () => ({
   }
 }));
  
-import app from '../app.js';
+import app from '../../../app.js';
 import { pool } from '../db/config.js';
  
 // ─── AUTHORS ─────────────────────────────────────────────────────────────────

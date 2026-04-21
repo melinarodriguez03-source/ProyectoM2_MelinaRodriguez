@@ -7,7 +7,7 @@ import {
   validarContenido,
   validarAuthorId,
   validarPublished
-} from '../validators.js';
+} from '../../validators.js';
  
 // ─── validarNombre ───────────────────────────────────────────────────────────
  

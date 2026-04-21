@@ -1,7 +1,7 @@
 import express from 'express';
-import authorsRouter from './routes/authors.js';
-import postsRouter from './routes/posts.js';
-import { errorHandler } from './errorHandler.js';
+import authorsRouter from './src/routes/authors.js';
+import postsRouter from './src/routes/posts.js';
+import { errorHandler } from './src/middleware/errorHandler.js';
 
 const app = express();
 

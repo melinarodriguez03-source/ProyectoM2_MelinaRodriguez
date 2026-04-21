@@ -1,9 +1,3 @@
-import 'dotenv/config';
-import express from 'express';       
-const router = express.Router();
-import { pool } from '../db/config.js';
-
-// GET /api/posts - Obtener todos los posts
 router.get('/', async (req, res) => {
   const { published } = req.query;
   
@@ -26,7 +20,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/posts/:id - Obtener un post por ID
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(
@@ -45,22 +38,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// GET /api/posts/author/:authorId - Obtener posts por autor
-router.get('/author/:authorId', async (req, res) => {
-  try {
-    const result = await pool.query(
-      'SELECT * FROM posts WHERE author_id = $1 ORDER BY created_at DESC',
-      [req.params.authorId]
-    );
-    
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error obteniendo posts del autor:', error);
-    res.status(500).json({ error: 'Error obteniendo posts del autor' });
-  }
-});
-
-// POST /api/posts - Crear un nuevo post
 router.post('/', async (req, res) => {
   const { title, content, author_id, published } = req.body;
   
@@ -87,9 +64,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Error creando post' });
   }
 });
-  
 
-// PUT /api/posts/:id - Actualizar un post
 router.put('/:id', async (req, res) => {
   const { title, content, published } = req.body;
   
@@ -110,7 +85,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/posts/:id - Eliminar un post
 router.delete('/:id', async (req, res) => {
   try {
     const result = await pool.query(
@@ -129,4 +103,16 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export default router;
+router.get('/author/:authorId', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM posts WHERE author_id = $1 ORDER BY created_at DESC',
+      [req.params.authorId]
+    );
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error obteniendo posts del autor:', error);
+    res.status(500).json({ error: 'Error obteniendo posts del autor' });
+  }
+});
