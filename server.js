@@ -1,11 +1,9 @@
-import  loadEnvFile from 'node:process';
+import { loadEnvFile } from 'node:process';
 loadEnvFile('.env');
-import loadEnvFile from 'node:process';
 import express from 'express';
 import authorsRouter from'./routes/authors.js';
 import postsRouter from './routes/posts.js';
 
-loadEnvFile('.env');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -26,6 +24,7 @@ app.get('/', (req, res) => {
     }
   });
 });
+
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {

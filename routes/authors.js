@@ -1,8 +1,7 @@
-import loadEnvFile from 'node:process';
-loadEnvFile('.env');
-import express from 'express';
-import router from express.Router();
-import pool from require '../db/config.js';// Importar el pool
+import 'dotenv/config';
+import express from 'express';      
+const router = express.Router();
+import { pool } from '../db/config.js';
 
 
 router.get('/', async (req, res) => {
@@ -14,63 +13,95 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Error obteniendo autores' });
   }
 });
+
 // GET /api/authors/:id - Obtener un autor por ID
-router.get('/:id', (req, res) => {
-  const author = authors.find(a => a.id === parseInt(req.params.id));
-  
-  if (!author) {
-    return res.status(404).json({ error: 'Autor no encontrado' });
+router.get('/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM authors WHERE id = $1',
+      [req.params.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Autor no encontrado' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error obteniendo autor:', error);
+    res.status(500).json({ error: 'Error obteniendo autor' });
   }
-  
-  res.json(author);
 });
 
 // POST /api/authors - Crear un nuevo autor
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { name, email, bio } = req.body;
   
   if (!name || !email) {
     return res.status(400).json({ error: 'Nombre y email son requeridos' });
   }
   
-  const newAuthor = {
-    id: authors.length + 1,
-    name,
-    email,
-    bio: bio || ''
-  };
-  
-  authors.push(newAuthor);
-  res.status(201).json(newAuthor);
+  try {
+    const result = await pool.query(
+      'INSERT INTO authors (name, email, bio) VALUES ($1, $2, $3) RETURNING *',
+      [name, email, bio || null]
+    );
+    
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creando autor:', error);
+    
+    if (error.code === '23505') {
+      return res.status(409).json({ error: 'El email ya está registrado' });
+    }
+    
+    res.status(500).json({ error: 'Error creando autor' });
+  }
 });
 
 // PUT /api/authors/:id - Actualizar un autor
-router.put('/:id', (req, res) => {
-  const author = authors.find(a => a.id === parseInt(req.params.id));
-  
-  if (!author) {
-    return res.status(404).json({ error: 'Autor no encontrado' });
-  }
-  
+router.put('/:id', async (req, res) => {
   const { name, email, bio } = req.body;
   
-  if (name) author.name = name;
-  if (email) author.email = email;
-  if (bio !== undefined) author.bio = bio;
-  
-  res.json(author);
+  try {
+    const result = await pool.query(
+      'UPDATE authors SET name = COALESCE($1, name), email = COALESCE($2, email), bio = COALESCE($3, bio) WHERE id = $4 RETURNING *',
+      [name, email, bio, req.params.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Autor no encontrado' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error actualizando autor:', error);
+    
+    if (error.code === '23505') {
+      return res.status(409).json({ error: 'El email ya está registrado' });
+    }
+    
+    res.status(500).json({ error: 'Error actualizando autor' });
+  }
 });
 
 // DELETE /api/authors/:id - Eliminar un autor
-router.delete('/:id', (req, res) => {
-  const index = authors.findIndex(a => a.id === parseInt(req.params.id));
-  
-  if (index === -1) {
-    return res.status(404).json({ error: 'Autor no encontrado' });
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM authors WHERE id = $1',
+      [req.params.id]
+    );
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Autor no encontrado' });
+    }
+    
+    res.json({ message: 'Autor eliminado exitosamente' });
+  } catch (error) {
+    console.error('Error eliminando autor:', error);
+    res.status(500).json({ error: 'Error eliminando autor' });
   }
-  
-  authors.splice(index, 1);
-  res.json({ message: 'Autor eliminado exitosamente' });
 });
 
-module.exports = router;
+export default router;
