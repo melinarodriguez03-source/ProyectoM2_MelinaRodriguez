@@ -185,14 +185,9 @@ DATABASE_URL=postgresql://user:password@localhost:5432/blog_db
 
 - **Public URL** (acceso desde internet):
   ```
-  https://<app-name>.railway.app
+  https://proyectom2melinarodriguez-production.up.railway.app/api-docs
   ```
   
-- **Internal URL** (acceso desde otros servicios Railway):
-  ```
-  http://<app-name>:3000
-  ```
-
 ### 4. Conectar Base de Datos en Railway
 
 1. Crear un plugin PostgreSQL en el proyecto Railway
@@ -220,20 +215,19 @@ Alternativamente, conectar el repositorio GitHub directamente en el dashboard de
 ---
 
 ## Registro del Uso de AI en el Proyecto
+-Se adjuntan imágenes con los prompts utilizados en Claude.AI y Copilot en la carpeta /media
 
 ### Herramientas de IA Utilizadas
 
-- **GitHub Copilot**: Asistencia en la generación de código, completación de funciones y estructura del proyecto.
-- **ChatGPT/Claude**: 
-  - Consultas sobre arquitectura REST y best practices
+- **GitHub Copilot**: Asistencia en la generación de código, completación de funciones y estructura del proyecto. Redacción de documentación README.md
+- **Claude**: 
+  - Consultas sobre arquitectura REST 
   - Generación de validadores de datos
   - Creación de scripts SQL de setup
-  - Redacción de documentación Este README.md
   - Configuración de tests con Vitest
 
 ### Contribuciones de AI
 
-- ✅ Generación de controladores y servicios
 - ✅ Implementación de validadores de datos
 - ✅ Estructura de rutas y middleware
 - ✅ Configuración de tests automáticos
@@ -304,13 +298,6 @@ Proyecto M2/
 - Limpiar node_modules: `rm -rf node_modules && npm install`
 - Ejecutar: `npm test -- --reporter=verbose`
 
----
-
-## Contacto y Soporte
-
-Para preguntas o problemas, contactar al equipo de desarrollo.
-
----
 
 **Última actualización**: Abril 2026  
 **Versión**: 1.0.0  
